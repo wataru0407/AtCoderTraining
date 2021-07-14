@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ABC209_A
@@ -7,24 +8,36 @@ namespace ABC209_A
     {
         static void Main(string[] args)
         {
-            var input = Console.ReadLine()?.Split(" ")
-                .Where(x => int.TryParse(x, out var y))
-                .Select(x => int.Parse(x)).ToArray();
+            var input = Console.ReadLine();
 
-            if(input.Length != 2)
+            if (string.IsNullOrEmpty(input))
             {
-                Console.WriteLine("標準入力の値が不正です。");
+                Console.WriteLine("標準入力が空です。");
                 return;
             }
 
-            var minNumber = input[0];
-            var maxNumber = input[1];
+            var inputs = input.Split(" ");
 
-            bool isValid = InputCondition.IsValidNumber(0, 100, minNumber) && InputCondition.IsValidNumber(0, 100, maxNumber);
+            if (inputs.Length != 2)
+            {
+                Console.WriteLine("標準入力の値の個数が不正です。");
+                return;
+            }
+
+            if (!inputs.All(x => int.TryParse(x, out var y)))
+            {
+                Console.WriteLine("標準入力が整数ではありません。");
+                return;
+            }
+
+            var minNumber = int.Parse(inputs[0]);
+            var maxNumber = int.Parse(inputs[1]);
+
+            bool isValid = InputCondition.IsValidNumber(1, 100, minNumber) && InputCondition.IsValidNumber(1, 100, maxNumber);
 
             if (!isValid)
             {
-                Console.WriteLine("制約を満たしていません。");
+                Console.WriteLine("標準入力が制約を満たしていません。");
                 return;
             }
 

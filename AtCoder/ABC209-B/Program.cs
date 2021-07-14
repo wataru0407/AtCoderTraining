@@ -7,34 +7,74 @@ namespace ABC209_B
     {
         static void Main(string[] args)
         {
-            var input1 = Console.ReadLine()?.Split(" ")
-                .Where(x => int.TryParse(x, out var y))
-                .Select(x => int.Parse(x)).ToArray();
-            var input2 = Console.ReadLine()?.Split(" ")
-                .Where(x => int.TryParse(x, out var y))
-                .Select(x => int.Parse(x)).ToArray();
 
-            if (input1.Length != 2)
+            // 1行目の標準入力を受け付ける
+            var input1 = Console.ReadLine();
+
+            // 1行目の標準入力に対する例外処理
+            if (string.IsNullOrEmpty(input1))
             {
-                Console.WriteLine("標準入力の値が不正です。");
+                Console.WriteLine("標準入力が空です。");
                 return;
             }
 
-            var quantity = input1[0]; // 商品の個数X
-            var amount = input1[1]; // 所持金X円
+            var inputs1 = input1.Split(" ");
 
-            bool isValid = InputCondition.IsValidNumber(1, 100, quantity)
-                && InputCondition.IsValidNumber(1, 10000, amount)
-                && input2.All(x => InputCondition.IsValidNumber(1, 100, x));
-
-            if (!isValid)
+            if (inputs1.Length != 2)
             {
-                Console.WriteLine("制約を満たしていません。");
+                Console.WriteLine("標準入力の値の個数が不正です。");
+                return;
+            }
+
+            if (!inputs1.All(x => int.TryParse(x, out var y)))
+            {
+                Console.WriteLine("標準入力が整数ではありません。");
+                return;
+            }
+
+            // 商品の個数X
+            var quantity = int.Parse(inputs1[0]);
+            // 所持金X円
+            var amount = int.Parse(inputs1[1]);
+
+            bool isValid1 = InputCondition.IsValidNumber(1, 100, quantity) && InputCondition.IsValidNumber(1, 10000, amount);
+
+            if (!isValid1)
+            {
+                Console.WriteLine("標準入力が制約を満たしていません。");
+                return;
+            }
+
+            // 2行目の標準入力を受け付ける
+            var input2 = Console.ReadLine();
+
+            // 2行目の標準入力に対する例外処理
+            if (string.IsNullOrEmpty(input2))
+            {
+                Console.WriteLine("標準入力が空です。");
+                return;
+            }
+
+            var inputs2 = input2.Split(" ");
+
+            if (!inputs2.All(x => int.TryParse(x, out var y)))
+            {
+                Console.WriteLine("標準入力が整数ではありません。");
+                return;
+            }
+
+            var regularPrice = inputs2.Select(x => int.Parse(x)).ToList();
+
+            bool isValid2 = regularPrice.All(x => InputCondition.IsValidNumber(1, 100, x));
+
+            if (!isValid2)
+            {
+                Console.WriteLine("標準入力が制約を満たしていません。");
                 return;
             }
 
             // 1円引きの商品の個数は[(売られている商品/2)の小数点以下を切り捨てた値]なのでその分を差し引く
-            var price = input2.Sum() - quantity / 2;
+            var price = regularPrice.Sum() - quantity / 2;
             var answer = price > amount ? "No" : "Yes";
             Console.WriteLine(answer);
 
