@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -17,22 +13,31 @@ using System.Text;
  */
 public class Solution
 {
-    public List<int> Result { get; } = new List<int>();
-
     public IList<int> InorderTraversal(TreeNode root)
     {
-        Dfs(root);
-        return Result;
+        return Dfs(root).ToList();
     }
 
-    private void Dfs(TreeNode root)
+    private IEnumerable<int> Dfs(TreeNode root)
     {
+        // ノードがない場合はメソッドを抜ける
         if (root == null)
         {
-            return;
+            yield break;
         }
-        Dfs(root.left);
-        Result.Add(root.val);
-        Dfs(root.right);
+
+        // 左ノードに対して再帰的に実行する
+        foreach (var leftVal in Dfs(root.left))
+        {
+            yield return leftVal;
+        }
+
+        yield return root.val;
+
+        // 右ノードに対して再帰的に実行する
+        foreach (var rightVal in Dfs(root.right))
+        {
+            yield return rightVal;
+        }
     }
 }
