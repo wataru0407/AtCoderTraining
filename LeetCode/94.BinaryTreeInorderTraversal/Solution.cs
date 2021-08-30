@@ -1,3 +1,6 @@
+// 94. Binary Tree Inorder Traversal
+// https://leetcode.com/problems/binary-tree-inorder-traversal/
+
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -15,29 +18,27 @@ public class Solution
 {
     public IList<int> InorderTraversal(TreeNode root)
     {
-        return Dfs(root).ToList();
+        var list = new List<int>();
+        return Dfs(root, list);
     }
 
-    private IEnumerable<int> Dfs(TreeNode root)
+    private List<int> Dfs(TreeNode root, List<int> list)
     {
-        // ノードがない場合はメソッドを抜ける
+        // ノードがない場合は引数のリストを返す
         if (root == null)
         {
-            yield break;
+            return list;
         }
 
         // 左ノードに対して再帰的に実行する
-        foreach (var leftVal in Dfs(root.left))
-        {
-            yield return leftVal;
-        }
+        var leftList =  Dfs(root.left, list);
 
-        yield return root.val;
+        // 自身のvalueを追加したListを作る
+        var addList = leftList.Append(root.val).ToList();
 
         // 右ノードに対して再帰的に実行する
-        foreach (var rightVal in Dfs(root.right))
-        {
-            yield return rightVal;
-        }
+        var rightList =  Dfs(root.right, addList);
+
+        return rightList;
     }
 }
