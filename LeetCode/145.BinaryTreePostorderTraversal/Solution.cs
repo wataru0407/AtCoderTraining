@@ -1,5 +1,5 @@
-// 94. Binary Tree Inorder Traversal
-// https://leetcode.com/problems/binary-tree-inorder-traversal/
+// 145. Binary Tree Postorder Traversal
+// https://leetcode.com/problems/binary-tree-postorder-traversal/
 
 /**
  * Definition for a binary tree node.
@@ -16,7 +16,7 @@
  */
 public class Solution
 {
-    public IList<int> InorderTraversal(TreeNode root)
+    public IList<int> PostorderTraversal(TreeNode root)
     {
         var list = new List<int>();
         return Dfs(root, list);
@@ -33,12 +33,12 @@ public class Solution
         // 左ノードに対して再帰的に実行する
         var leftList =  Dfs(root.left, list);
 
-        // 自身のvalueを追加したListを作る
-        var addList = leftList.Append(root.val).ToList();
-
         // 右ノードに対して再帰的に実行する
-        var rightList =  Dfs(root.right, addList);
+        var rightList =  Dfs(root.right, leftList);
 
-        return rightList;
+        // 自身のvalueを追加したListを作る
+        var addList = rightList.Append(root.val).ToList();
+
+        return addList;
     }
 }
