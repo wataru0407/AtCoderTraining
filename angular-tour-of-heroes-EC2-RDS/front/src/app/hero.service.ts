@@ -10,7 +10,7 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HeroService {
-  private heroesUrl = 'http://localhost:4200/api/heroes';  // Web APIのURL
+  private heroesUrl = 'api/heroes';  // Web APIのURL
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
