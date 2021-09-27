@@ -1,22 +1,24 @@
-const e = require('express');
 const express = require('express');
-
 const mysql = require('mysql');
 const app = express();
 const port = 3000;
 
+// RESTAPIのbodyを使うための設定
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
+// 環境変数を.envで管理するための設定
 require('dotenv').config();
 
+// mysqlへのコネクションを作成
 const connection = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DATABASE,
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
 });
 
+// mysqlへ接続
 connection.connect((err) => {
   if (err) {
     console.log('error connecting: ' + err.stack);
@@ -25,135 +27,65 @@ connection.connect((err) => {
   console.log('success');
 });
 
+// 設定したportで受け入れ
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`Angular hero tutorial app listening at http://localhost:${port}`)
 });
 
-app.get("/api/heroes", function(req, res, next){
-    connection.query(
-      'SELECT * FROM heroes',
-      (error, results) => {
-        console.log("/api/heroes");
-        console.log(results);
-        const searchName = req.query.name;
+// ヒーローを取得
+app.get("/api/heroes", (req, res) => {
+    const sql = 'SELECT * FROM heroes';
+    connection.query(sql, (err, result) => {
+        if (err) throw err;
+        const searchName = req.query?.name;
+        // 名前で検索された場合は含まれるものを返す
         if (searchName) {
-          const rec = results.filter(item => item.name.includes(searchName));
-          res.json(rec);
-        } else {
-          res.json(results);
+            const rec = result.filter(item => item.name.includes(searchName));
+            res.json(rec);
+            return;
         }
-      }
-    );
+        // その他の場合はselectした結果をそのまま返す
+        res.json(result);
+    });
 });
 
-app.get("/api/heroes/:id", function(req, res, next){
-    //const hero = heroes.find(x => x.id == req.params.id);
-    connection.query(
-      `SELECT * FROM heroes where id = ${req.params.id}`,
-      (error, results) => {
-        console.log("/api/heroes/:id");
-        console.log(results);
-        const hero = results[0];
+app.get("/api/heroes/:id", (req, res) => {
+    const searchId = req.params.id;
+    const sql = `SELECT * FROM heroes WHERE id = ${searchId}`;
+    connection.query(sql, (err, result) => {
+        if (err) throw err;
+        const hero = result[0];
         res.json(hero);
-      }
-    );
-    //res.json(hero);
+    });
 });
 
-app.get("/api/heroes/:id", function(req, res, next){
-  //const hero = heroes.find(x => x.id == req.params.id);
-  connection.query(
-    `SELECT * FROM heroes where id = ${req.params.id}`,
-    (error, results) => {
-      console.log("/api/heroes/:id");
-      console.log(results);
-      const hero = results[0];
-      res.json(hero);
-    }
-  );
-  //res.json(hero);
-});
-
-// app.put("/api/heroes", function(req, res, next){
-//   //const hero = heroes.find(x => x.id == req.params.id);
-//   connection.query(
-//     `UPDATE heroes set name = '${req.params.name}' where id = ${req.params.id}`,
-//     `SELECT * FROM angular_tutorial.heroes where id = ${req.params.id}`,
-//     (error, results) => {
-//       console.log(results);
-//       const hero = results[0];
-//       res.json(hero);
-//     }
-//   );
-//   //res.json(hero);
-// });
-
+// ヒーローを更新
 app.put("/api/heroes", (req, res) => {
-  console.log("post start");
-  const id = req.body.id;
-  const name = req.body.name;
-  console.log(name);
-  const sql = `UPDATE heroes SET name = '${name}' where id = ${id}`;
-  console.log(sql);
-  connection.query(sql, (err, result) => {
-    if (err) throw err;
-    console.log(result);
-    //const insertId = result.insertId;
-    //const resHero = {id: insertId, name: name};
-    //res.json(resHero);
-  })
+    const updateId = req.body.id;
+    const updateName = req.body.name;
+    const sql = `UPDATE heroes SET name = '${updateName}' WHERE id = ${updateId}`;
+    connection.query(sql, (err, result) => {
+        if (err) throw err;
+    });
 });
 
-
+// ヒーローを追加
 app.post("/api/heroes", (req, res) => {
-  console.log("put start");
-  const name = req.body.name;
-  console.log(name);
-  const sql = `INSERT INTO heroes(name) VALUES('${name}')`;
-  console.log(sql);
-  connection.query(sql, (err, result) => {
-    if (err) throw err;
-    console.log(result);
-    const insertId = result.insertId;
-    const resHero = {id: insertId, name: name};
-    res.json(resHero);
-  })
+    const insertName = req.body.name;
+    const sql = `INSERT INTO heroes(name) VALUES('${insertName}')`;
+    connection.query(sql, (err, result) => {
+        if (err) throw err;
+        const insertId = result.insertId;
+        const resHero = {id: insertId, name: insertName};
+        res.json(resHero);
+    });
 });
 
+// ヒーローを削除
 app.delete("/api/heroes/:id", (req, res) => {
-  console.log("delete start");
-  const deleteId = req.params.id;
-  const sql = `DELETE FROM heroes where id = ${deleteId}`;
-  console.log(sql);
-  connection.query(sql, (err, result) => {
-    if (err) throw err;
-    console.log(result);
-    // const insertId = result.insertId;
-    // const resHero = {id: insertId, name: name};
-    // res.json(resHero);
-  })
+    const deleteId = req.params.id;
+    const sql = `DELETE FROM heroes WHERE id = ${deleteId}`;
+    connection.query(sql, (err, result) => {
+        if (err) throw err;
+    });
 });
-
-
-// app.post("/api/heroes", function(req, res, next){
-//   //const hero = heroes.find(x => x.id == req.params.id);
-//   // const sql = `INSERT INTO heroes VALUES('${req.name}')`;
-//   const sql = `INSERT INTO heroes SET ?`;
-
-//   console.log(req.body);
-//   connection.query(sql, function(err, result, fields){
-//     if (err) throw err;
-//     console.log(result);
-//     res.send('完了');
-//   })
-//   // console.log(sql);
-//   // connection.query(
-//   //   `INSERT INTO heroes VALUES('${req.params.name}')`,
-//   //   (error, results) => {
-//   //     console.log(results);
-//   //     const hero = results[0];
-//   //     res.json(hero);
-//   //   }
-//   // );
-//   //res.json(hero);
-// });
