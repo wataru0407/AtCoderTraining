@@ -37,14 +37,17 @@ app.get("/api/heroes", (req, res) => {
     const sql = 'SELECT * FROM heroes';
     connection.query(sql, (err, result) => {
         if (err) throw err;
-        const searchName = req.query?.name;
+        const searchName = req.query.name;
+        console.log(searchName);
         // 名前で検索された場合は含まれるものを返す
         if (searchName) {
+            console.log("search");
             const rec = result.filter(item => item.name.includes(searchName));
             res.json(rec);
             return;
         }
         // その他の場合はselectした結果をそのまま返す
+        console.log("all");
         res.json(result);
     });
 });
@@ -66,6 +69,8 @@ app.put("/api/heroes", (req, res) => {
     const sql = `UPDATE heroes SET name = '${updateName}' WHERE id = ${updateId}`;
     connection.query(sql, (err, result) => {
         if (err) throw err;
+        const resHero = {id: updateId, name: updateName};
+        res.json(resHero);
     });
 });
 
@@ -87,5 +92,8 @@ app.delete("/api/heroes/:id", (req, res) => {
     const sql = `DELETE FROM heroes WHERE id = ${deleteId}`;
     connection.query(sql, (err, result) => {
         if (err) throw err;
+        const deleteName = req.body.name;
+        const resHero = {id: deleteId, name: deleteName};
+        res.json(resHero);
     });
 });
