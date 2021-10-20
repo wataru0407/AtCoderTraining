@@ -15,19 +15,18 @@
  * }
  */
 public class Solution {
-    private int result = 0;
-
     public int FindTilt(TreeNode root) {
-        Dfs(root);
-        return result;
+        var list = new List<int>();
+        return Dfs(root, list).absList.Sum();
     }
-    private int Dfs(TreeNode root) {
-        if (root == null) return 0;
 
-        int left = Dfs(root.left);
-        int right = Dfs(root.right);
-        result += Math.Abs(left - right);
+    private (int result, List<int> absList) Dfs(TreeNode root, List<int> absList) {
+        if (root == null) return (0, absList);
 
-        return left + right + root.val;
+        int left = Dfs(root.left, absList).result;
+        int right = Dfs(root.right, absList).result;
+        absList.Add(Math.Abs(left - right));
+
+        return (left + right + root.val, absList);
     }
 }
