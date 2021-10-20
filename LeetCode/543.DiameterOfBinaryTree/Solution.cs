@@ -15,20 +15,18 @@
  * }
  */
 public class Solution {
-    private int result = 0;
-
     public int DiameterOfBinaryTree(TreeNode root) {
-        Dfs(root);
-        return result;
+        var list = new List<int>();
+        return Dfs(root, list).maxList.Max();
     }
 
-    private int Dfs(TreeNode root) {
-        if (root == null) return 0;
+    private (int result, List<int> maxList) Dfs(TreeNode root, List<int> maxList) {
+        if (root == null) return (0, maxList);
 
-        int left = Dfs(root.left);
-        int right = Dfs(root.right);
-        result = Math.Max(result, left + right);
+        int left = Dfs(root.left, maxList).result;
+        int right = Dfs(root.right, maxList).result;
+        maxList.Add(left + right);
 
-        return Math.Max(left, right) + 1;
+        return (Math.Max(left, right) + 1, maxList);
     }
 }
